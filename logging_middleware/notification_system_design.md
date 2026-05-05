@@ -508,3 +508,78 @@ No, the database save is quick and reliable, whereas the email notification reli
 - Failed emails will automatically be retried.
 - The workers will process in parallel, resulting in much faster processing times.
 - The database and email notifications will be fully decoupled.
+
+### Stage 6 Output 
+Top 10 Priority Notifications:
+[
+  {
+    "ID": "83bb5bb1-7f6d-4733-a51f-71bc73aee664",
+    "Type": "Placement",
+    "Message": "Amazon.com Inc. hiring",
+    "Timestamp": "2026-05-05 07:29:33",
+    "priorityScore": 3.0022127922033595
+  },
+  {
+    "ID": "6145300f-3019-42c5-9fd0-8a0178458bf7",
+    "Type": "Placement",
+    "Message": "Apple Inc. hiring",
+    "Timestamp": "2026-05-05 05:00:17",
+    "priorityScore": 3.0016633831944457
+  },
+  {
+    "ID": "54b1ec05-6fd2-4b0f-b09a-69305c1f472c",
+    "Type": "Placement",
+    "Message": "Alphabet Inc. Class A hiring",
+    "Timestamp": "2026-05-05 01:59:29",
+    "priorityScore": 3.001278797916318
+  },
+  {
+    "ID": "575b4ba1-b06c-45ea-b935-b915b545e93c",
+    "Type": "Placement",
+    "Message": "Nvidia Corporation hiring",
+    "Timestamp": "2026-05-05 00:59:17",
+    "priorityScore": 3.0011873884386717
+  },
+  {
+    "ID": "e9659aea-e188-4110-8c07-f5257ff934e5",
+    "Type": "Placement",
+    "Message": "PayPal Holdings Inc. hiring",
+    "Timestamp": "2026-05-04 16:30:05",
+    "priorityScore": 3.0007399819121288
+  },
+  {
+    "ID": "30763d32-0864-4359-aa03-47c5de937e0f",
+    "Type": "Placement",
+    "Message": "Visa Inc. hiring",
+    "Timestamp": "2026-05-04 12:59:57",
+    "priorityScore": 3.0006404025963502
+  },
+  {
+    "ID": "94d183ae-41c3-400d-97aa-7fa7219edb49",
+    "Type": "Placement",
+    "Message": "CSX Corporation hiring",
+    "Timestamp": "2026-05-04 10:29:21",
+    "priorityScore": 3.0005840719888974
+  },
+  {
+    "ID": "bb5764fa-6122-4e57-bb5d-6fd64c22b2ed",
+    "Type": "Placement",
+    "Message": "CSX Corporation hiring",
+    "Timestamp": "2026-05-04 09:29:41",
+    "priorityScore": 3.0005644027622136
+  },
+  {
+    "ID": "5a7902d3-3c7a-41e9-8e4c-5bbad5d92a78",
+    "Type": "Result",
+    "Message": "internal",
+    "Timestamp": "2026-05-05 03:59:25",
+    "priorityScore": 2.0015104575394904
+  },
+  {
+    "ID": "8e6f21c2-ca0e-4581-ab9b-a771fdf67edf",
+    "Type": "Result",
+    "Message": "project-review",
+    "Timestamp": "2026-05-05 01:59:09",
+    "priorityScore": 2.0012782530405433
+  }
+]
