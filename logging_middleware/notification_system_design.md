@@ -458,3 +458,28 @@ AND createdAt >= NOW() - INTERVAL '7 days';
 ```
 
 ---
+
+### Stage 4 Performance Improvement 
+
+Retrieving notifications from the database each time a student visits a page surges the workload and creates sluggish responses from the database.
+
+## Approach to Resolve Issue
+
+1. Caching (using Redis) - Create a cache of notifications once they have been retrieved from the database. When viewing a page again, retrieve that data from the cache. Whenever a new notification gets added to the database, invalidate that notification from cache.
+* **Pros:** Can perform reads much faster than querying the database and reduce workload on the database.
+* **Cons:** Complexities with cache invalidation and additional infrastructure.
+
+2. Pagination - Instead of loading all 300 notifications at once, limit the load to 20 notifications per page.
+* **Pros:** Simple approach and pass less data with each query.
+* **Cons:** Still hitting the database upon each page load.
+
+3. WebSockets (push vs. polling) - Read notifications only once via the login process. Utilize WebSockets to push new notifications to students rather than polling the database at peak high frequency.
+* **Pros:** Instant availability to notifications without the need for polling.
+* **Cons:** More complex to scale and greater memory footprint.
+
+4. Read Replica - Create an environment where read and write databases are configured separately. In this model, there is only one write database while the read databases are multiple.
+* **Pros**: Will eliminate loads from both the read and write databases.
+* **Cons**: There will be a delay with data reflecting in the read databases, and there will be an additional cost to maintain the separate read-only database.
+
+## Suggested Resolution
+Use a combination of Redis caching, paginated notifications and WebSocket technology for real-time updates and maximum performance.
