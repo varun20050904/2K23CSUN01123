@@ -483,3 +483,28 @@ Retrieving notifications from the database each time a student visits a page sur
 
 ## Suggested Resolution
 Use a combination of Redis caching, paginated notifications and WebSocket technology for real-time updates and maximum performance.
+
+### Stage 5 
+
+
+## Issues
+- Processing all 50,000 students sequentially is slow.
+- If an email is unable to send for student #200, there's no way to notify the other 49,800 students.
+- There isn't a way to track, retry, or notify on the failure of sending emails.
+- The database save and the email notification are tightly coupled, so if either fails, both fail.
+
+## Should the database save and the email notification occur at the same time?
+No, the database save is quick and reliable, whereas the email notification relies on an external API which may or may not be available at the time of intended use. Therefore, the two processes should be decoupled to avoid data loss.
+
+## Solution Redesign: Message Queue
+1. HR clicks Notify All
+2. Create a bulk insert into the database for all 50,000 students at once
+3. Push all student IDs to a message queue
+4. Create a worker process to retrieve student IDs from the queue, send email, and push notification
+5. If an email fails to send, it will automatically retry from queue.
+
+## Advantages
+- Database saves for all 50,000 students will be instant.
+- Failed emails will automatically be retried.
+- The workers will process in parallel, resulting in much faster processing times.
+- The database and email notifications will be fully decoupled.
