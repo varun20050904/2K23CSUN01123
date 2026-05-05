@@ -345,3 +345,116 @@ ORDER BY n.createdAt DESC
 LIMIT 20 OFFSET 0;
 ```
 ---
+# Stage 3
+
+## Is the Query Accurate?
+The given query is:
+```sql
+SELECT * FROM notifications
+WHERE studentID = 1042 AND isRead = false
+ORDER BY createdAt DESC;
+```
+
+The query is **functionally correct** — it will return the right data.
+However it has **serious performance problems** at scale.
+
+---
+
+## Why is it Slow?
+
+### Problem 1: SELECT *
+- Fetches ALL columns including unnecessary ones
+- More data transferred = slower response
+- **Fix: Select only needed columns**
+```sql
+SELECT id, type, message, createdAt
+FROM notifications
+WHERE studentID = 1042 AND isRead = false
+ORDER BY createdAt DESC;
+```
+
+### Problem 2: No Index on studentID and isRead
+- Without indexes, PostgreSQL does a **full table scan**
+- With 50,000 students and 5,000,000 notifications, 
+  it checks every single row
+- This is O(n) — very slow at scale
+
+### Problem 3: ORDER BY createdAt DESC without index
+- Sorting 5 million rows without an index is expensive
+
+---
+
+## What Would I Change?
+
+### Step 1: Add Composite Index
+```sql
+CREATE INDEX idx_notifications_student_read 
+ON notifications(studentID, isRead, createdAt DESC);
+```
+This index covers all three conditions in the query —
+WHERE studentID, WHERE isRead, and ORDER BY createdAt.
+Query cost drops from O(n) to O(log n).
+
+### Step 2: Select only needed columns
+```sql
+SELECT id, type, message, createdAt
+FROM notifications
+WHERE studentID = 1042 AND isRead = false
+ORDER BY createdAt DESC;
+```
+
+### Step 3: Add Pagination
+```sql
+SELECT id, type, message, createdAt
+FROM notifications
+WHERE studentID = 1042 AND isRead = false
+ORDER BY createdAt DESC
+LIMIT 20 OFFSET 0;
+```
+
+---
+
+## Likely Computation Cost
+
+| Scenario | Cost |
+|---|---|
+| Without index, 5M rows | Full table scan — O(n) — very slow |
+| With composite index | Index scan — O(log n) — fast |
+| With index + pagination | Only fetches 20 rows — extremely fast |
+
+---
+
+## Should We Add Index on Every Column?
+
+**No — this is bad advice.**
+
+### Why adding indexes on every column is harmful:
+- Every index takes up **extra disk space**
+- Every INSERT, UPDATE, DELETE becomes **slower** because 
+  all indexes need to be updated
+- Too many indexes = more overhead than benefit
+- Only index columns that are **frequently used in WHERE, 
+  JOIN, or ORDER BY clauses**
+
+### Good indexes for this table:
+```sql
+-- Yes: frequently queried together
+CREATE INDEX idx_notifications_student_read 
+ON notifications(studentID, isRead, createdAt DESC);
+
+-- No: never queried directly
+-- Don't index random columns like message or type alone
+```
+
+---
+
+## Query to Find Students with Placement Notification in Last 7 Days
+
+```sql
+SELECT DISTINCT studentID
+FROM notifications
+WHERE notificationType = 'Placement'
+AND createdAt >= NOW() - INTERVAL '7 days';
+```
+
+---
